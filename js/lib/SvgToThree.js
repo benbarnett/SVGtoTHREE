@@ -12,9 +12,6 @@ Thanks to http://code.google.com/p/canvg/
 */
 
 var SVGToThree = (function() {
-
-	// Array of TRHEE.Vector3's that should be looped through to create a THREE.Geometry()
-	this.vectors = [];
 	
 	function SVGToThree(svgPath) {
 		this.svgPath = svgPath;
@@ -195,8 +192,17 @@ var SVGToThree = (function() {
 		
 		var CommandListProto = CommandList.prototype;
 		
-		CommandListProto.add = function(action, params) {
-			var action = this.PathActions[action] || null;
+		CommandListProto.add = function() {
+			var action = arguments[0] || null,
+				params = (function(args) {
+					var params = [];
+					
+					for (var i = 1; i < args.length; i++){
+						params.push(args[i]);
+					};
+					
+					return params;
+				})(arguments);
 				
 			if (action) {
 				this.commands.push({
@@ -566,8 +572,6 @@ var SVGToThree = (function() {
 		        }
 		    }
 		
-			// console.log(pp);
-
 		    return cl.getCommands();
 		};
 		

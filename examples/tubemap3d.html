@@ -10,6 +10,100 @@
 
 <body>
 
+	<div id="viewport"></div>
+	
+	<script src="../js/lib/SVGToThree.js"></script>
+	<script src="../js/dist/Three.js"></script>
+	<script src="http://mrdoob.github.com/three.js/examples/js/RequestAnimationFrame.js"></script>
+	
+	<script>
+		// shim layer with setTimeout fallback
+		window.requestAnimFrame = (function() {
+		    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+		    function( /* function */ callback, /* DOMElement */ element) {
+		        window.setTimeout(callback, 1000 / 60);
+		    };
+		})();
+
+		var view_width = 400;
+		var view_height = 400;
+
+		var renderer = new THREE.WebGLRenderer({
+		    antialias: true
+		});
+		renderer.setSize(view_width, view_height);
+		document.getElementById('viewport').appendChild(renderer.domElement);
+
+		var projector = new THREE.Projector();
+
+		var scene = new THREE.Scene();
+
+		var camera = new THREE.PerspectiveCamera(
+		35, view_width / view_height, 1, 1000);
+		camera.position.set(0, 0, 20);
+		camera.lookAt(new THREE.Vector3(0, 0, 0));
+		scene.add(camera);
+
+		var geometry = new THREE.Geometry;
+		geometry.vertices.push(
+		    new THREE.Vertex(new THREE.Vector3(-5, 0, 0)),
+		    new THREE.Vertex(new THREE.Vector3(-2.5, 2, 0)),
+		    new THREE.Vertex(new THREE.Vector3(0, 0, 0)),
+		    new THREE.Vertex(new THREE.Vector3(2.5, 2, 0)),
+		    new THREE.Vertex(new THREE.Vector3(5, 0, 0))
+		);
+		geometry.colors = [
+		    new THREE.Color(0x000000),
+		    new THREE.Color(0xff0000),
+		    new THREE.Color(0x00ff00),
+		    new THREE.Color(0x0000ff),
+		    new THREE.Color(0xffff00),
+		];
+
+		material = new THREE.LineBasicMaterial( { color: 0xffffff, opacity: 1, linewidth: 7 } );
+		material.vertexColors = true;
+
+		var line = new THREE.Line(geometry, material);
+		scene.add(line);
+		
+		
+		// PATH
+		var pathCommands = new SVGToThree("M-782.239-51.21\
+			v338.43c0,4.869,2.819,11.679,6.264,15.121l257.258,257.252c3.445,3.451,10.25,6.263,15.113,6.263 M1029.1,168.446\
+			c0-7.607,6.16-13.771,13.771-13.771h127.069c7.601,0,13.771-6.166,13.771-13.776V-14.007c0-7.604-6.17-13.775-13.771-13.775H1042.87\
+			c-7.61,0-13.771,6.171-13.771,13.775 M1029.1-213.652v516.811c0,2.813-2.819,9.627-6.26,13.065L875.1,463.966\
+			c-3.439,3.445-10.239,6.257-15.109,6.257");
+			
+		var path = new THREE.Path();
+		path.moveTo(100, 100);
+		// console.log(path);
+			
+		for (var i=0; i < pathCommands.length; i++) {
+			var command = pathCommands[i],
+				action = command.action,
+				params = command.params;
+			
+			// console.log(THREE.PathActions[action], path[THREE.PathActions[action]], params);
+			
+			// path[THREE.PathActions[action]].call(params);
+		};
+		
+		scene.add(path);
+		
+
+		var render = function render() {
+		    renderer.render(scene, camera);
+		};
+
+		var main = function main() {
+		    render();
+		    window.requestAnimFrame(main);
+		};
+
+
+
+		requestAnimFrame(main);
+	</script>
 
 </body>
 </html>
